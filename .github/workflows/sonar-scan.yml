@@ -8,46 +8,45 @@ on:
 jobs:
   sonar_scan:
     name: SonarQube Scan
-    runs-on: ubuntu-latest
+    runs-on: macos-latest  # Run on macOS
 
     steps:
+    # Step 1: Checkout the repository
     - name: Checkout code
       uses: actions/checkout@v3
 
+    # Step 2: Set up Node.js
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '18' 
+        node-version: '18'
 
+    # Step 3: Install dependencies
     - name: Install dependencies
       run: |
         npm install
 
-   - name: Install SonarQube Scanner
-     run: |
-      # Download SonarQube Scanner CLI
-      curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
-        
-      # Unzip the scanner into a directory
-      unzip sonar-scanner.zip -d sonar-scanner
-        
-      # Add sonar-scanner to PATH
-      export PATH=$(pwd)/sonar-scanner/sonar-scanner-4.6.2.2472-linux/bin:$PATH
-        
-      # Verify if sonar-scanner is available in the PATH
-      echo "Checking sonar-scanner version..."
-      sonar-scanner --version
+    # Step 4: Install SonarQube Scanner (macOS)
+    - name: Install SonarQube Scanner (macOS)
+      run: |
+        curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-macosx.zip
+        unzip sonar-scanner.zip -d sonar-scanner
+        chmod +x sonar-scanner/sonar-scanner-4.6.2.2472-macosx/bin/sonar-scanner
 
+        # Add sonar-scanner to PATH (make sure this is accessible in subsequent steps)
+        echo "sonar-scanner/sonar-scanner-4.6.2.2472-macosx/bin" >> $GITHUB_PATH
+
+    # Step 5: Verify SonarQube Scanner Installation
+    - name: Verify SonarQube Scanner Installation
+      run: |
+        echo $PATH  # Check if the sonar-scanner directory is in PATH
+        sonar-scanner --version  # Verify sonar-scanner is accessible
+
+    # Step 6: Run SonarQube Scan
     - name: Run SonarQube Scan
       run: |
         sonar-scanner \
           -Dsonar.projectKey=sonarqube-nodejs-project \
           -Dsonar.sources=. \
-          -Dsonar.host.url=http://localhost:9000 \
-          -Dsonar.login=sqp_a1467b114c4f45dba482674fb1926c6b919f2942 \
-          -Dsonar.verbose=true 
-
-    - name: Upload SonarQube Results to GitHub
-      uses: sonarsource/sonarcloud-github-action@v2
-      with:
-        sonar-token: sqp_a1467b114c4f45dba482674fb1926c6b919f2942
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.login=sqp_a1467b114c4f45dba482674fb1926c6b919f2942
