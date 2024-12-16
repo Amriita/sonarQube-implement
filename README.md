@@ -37,7 +37,7 @@ docker-compose up
    - Follow the prompts to generate a token.
    - Copy the token for later use.
 
-![SonarQube Project Setup Screenshot](https://github.com/Amriita/sonarQube-implement/static/setup-project.png)
+![SonarQube Project Setup Screenshot](https://raw.githubusercontent.com/Amriita/sonarQube-implement/main/static/setup-project.png)
 
 ## Run Code Scan
 
@@ -49,7 +49,7 @@ node sonar-scanner.js
 
 After the scan is complete, go back to the SonarQube portal and verify the analysis results.
 
-![SonarQube Analysis Results Screenshot](https://github.com/Amriita/sonarQube-implement/static/sonarqube-portal.png)
+![SonarQube Analysis Results Screenshot](https://raw.githubusercontent.com/Amriita/sonarQube-implement/main/static/sonarqube-portal.png)
 
 ## Fetch Issues Programmatically
 
@@ -96,13 +96,32 @@ This will retrieve the issues detected by SonarQube and display the results in t
 ]
 ```
 
-![Fetch Issues Response Screenshot](https://github.com/Amriita/sonarQube-implement/static/fetchbug-result.png)
+![Fetch Issues Response Screenshot](https://raw.githubusercontent.com/Amriita/sonarQube-implement/main/static/fetchbug-result.png)
 
 ## cleanUp 
 
 ```
 docker-compose down -v
 ```
+
+## SonarQube Issues API: `/api/issues/search` 
+
+![Fetch Issues API](https://raw.githubusercontent.com/Amriita/sonarQube-implement/main/static/issue-api.png)
+
+
+The `/api/issues/search` endpoint allows you to fetch issues from SonarQube with various filters. Below are the available parameters:
+
+| Parameter        | Description                                                              | Example Values                      |
+|------------------|--------------------------------------------------------------------------|-------------------------------------|
+| `componentKeys`  | The project or component key whose issues you want to fetch.            |`sonarqube-nodejs-project`           |
+| `statuses`       | Filter by issue statuses.                                               | `OPEN`, `CONFIRMED`, `REOPENED`     |
+| `types`          | Filter by issue types.                                                  | `BUG`, `CODE_SMELL`, `VULNERABILITY`|
+| `severities`     | Filter by issue severity levels.                                        | `BLOCKER`, `CRITICAL`, `MAJOR`      |
+| `resolutions`    | Filter by resolution statuses (e.g., FIXED, WONT_FIX).                  | `FIXED`, `FALSE-POSITIVE`           |
+| `rules`          | Filter issues by specific rules.                                        | `java:S106`                         |
+| `page`           | Page number for paginated results.                                      | `1`, `2`, etc.                      |
+| `ps`             | Number of issues per page (default is 100).                             | `50`, `100`, etc.                   |
+| `facets`         | Get additional metadata (e.g., by severity, status).                    | `severities`, `statuses`            |
 
 ## Notes
 - Ensure the SonarQube server is running before scanning or fetching issues.
