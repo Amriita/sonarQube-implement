@@ -26,7 +26,16 @@ jobs:
       run: |
         npm install
 
-    # Step 4: Install SonarQube Scanner (macOS)
+    # Step 4: Install Java 17
+    - name: Install Java 17
+      run: |
+        brew install openjdk@17
+        sudo ln -sfn /usr/local/opt/openjdk@17/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-17.jdk
+        echo 'export PATH="/usr/local/opt/openjdk@17/bin:$PATH"' >> ~/.zshrc
+        echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 17)' >> ~/.zshrc
+        source ~/.zshrc
+
+    # Step 5: Install SonarQube Scanner (macOS)
     - name: Install SonarQube Scanner (macOS)
       run: |
         curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-macosx.zip
@@ -36,13 +45,13 @@ jobs:
         # Add sonar-scanner to PATH (make sure this is accessible in subsequent steps)
         echo "sonar-scanner/sonar-scanner-4.6.2.2472-macosx/bin" >> $GITHUB_PATH
 
-    # Step 5: Verify SonarQube Scanner Installation
+    # Step 6: Verify SonarQube Scanner Installation
     - name: Verify SonarQube Scanner Installation
       run: |
         echo $PATH  # Check if the sonar-scanner directory is in PATH
         sonar-scanner --version  # Verify sonar-scanner is accessible
 
-    # Step 6: Run SonarQube Scan
+    # Step 7: Run SonarQube Scan
     - name: Run SonarQube Scan
       run: |
         sonar-scanner \
