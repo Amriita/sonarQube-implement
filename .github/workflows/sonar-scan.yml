@@ -23,18 +23,29 @@ jobs:
       run: |
         npm install
 
-    - name: Install SonarQube Scanner
-      run: |
-        curl -sSLo sonar-scanner.zip https://github.com/SonarSource/sonar-scanner-cli/releases/download/4.6.2.2472/sonar-scanner-4.6.2.2472-linux.zip
-        unzip sonar-scanner.zip
-        export PATH=$(pwd)/sonar-scanner-4.6.2.2472-linux/bin:$PATH
+   - name: Install SonarQube Scanner
+     run: |
+      # Download SonarQube Scanner CLI
+      curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
+        
+      # Unzip the scanner into a directory
+      unzip sonar-scanner.zip -d sonar-scanner
+        
+      # Add sonar-scanner to PATH
+      export PATH=$(pwd)/sonar-scanner/sonar-scanner-4.6.2.2472-linux/bin:$PATH
+        
+      # Verify if sonar-scanner is available in the PATH
+      echo "Checking sonar-scanner version..."
+      sonar-scanner --version
 
     - name: Run SonarQube Scan
       run: |
-        sonar-scanner -Dsonar.projectKey=sonarqube-nodejs-project \
+        sonar-scanner \
+          -Dsonar.projectKey=sonarqube-nodejs-project \
           -Dsonar.sources=. \
           -Dsonar.host.url=http://localhost:9000 \
-          -Dsonar.login=sqp_a1467b114c4f45dba482674fb1926c6b919f2942
+          -Dsonar.login=sqp_a1467b114c4f45dba482674fb1926c6b919f2942 \
+          -Dsonar.verbose=true 
 
     - name: Upload SonarQube Results to GitHub
       uses: sonarsource/sonarcloud-github-action@v2
