@@ -27,15 +27,23 @@ jobs:
         npm install
 
     # Step 4: Install Java 17
-    - name: Install Java 17
-      run: |
-        brew install openjdk@17
-        sudo ln -sfn /usr/local/opt/openjdk@17/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-17.jdk
-        echo 'export PATH="/usr/local/opt/openjdk@17/bin:$PATH"' >> ~/.zshrc
-        echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 17)' >> ~/.zshrc
-        source ~/.zshrc
+    - name: Set up Java 17
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'adopt'
+        java-version: '17'
 
-    # Step 5: Install SonarQube Scanner (macOS)
+    # Step 5: Set JAVA_HOME environment variable
+    - name: Set JAVA_HOME
+      run: |
+        echo "JAVA_HOME=$(dirname $(dirname $(readlink $(which java))))" >> $GITHUB_ENV
+
+    # Step 6: Verify Java version
+    - name: Verify Java version
+      run: |
+        java -version
+
+    # Step 7: Install SonarQube Scanner (macOS)
     - name: Install SonarQube Scanner (macOS)
       run: |
         curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-macosx.zip
@@ -45,17 +53,18 @@ jobs:
         # Add sonar-scanner to PATH (make sure this is accessible in subsequent steps)
         echo "sonar-scanner/sonar-scanner-4.6.2.2472-macosx/bin" >> $GITHUB_PATH
 
-    # Step 6: Verify SonarQube Scanner Installation
+    # Step 8: Verify SonarQube Scanner Installation
     - name: Verify SonarQube Scanner Installation
       run: |
         echo $PATH  # Check if the sonar-scanner directory is in PATH
         sonar-scanner --version  # Verify sonar-scanner is accessible
 
-    # Step 7: Run SonarQube Scan
+    # Step 9: Run SonarQube Scan
     - name: Run SonarQube Scan
       run: |
         sonar-scanner \
           -Dsonar.projectKey=sonarqube-nodejs-project \
           -Dsonar.sources=. \
-          -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.login=sqp_a1467b114c4f45dba482674fb1926c6b919f2942
+          -Dsonar.host.url=http://localhost:9000 \
+          -Dsonar.login=sqp_a1467b114c4f45dba482674fb1926c6b919f2942 \
+          -Dsonar.sourceEncoding=UTF-8
