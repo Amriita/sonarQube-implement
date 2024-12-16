@@ -7,7 +7,7 @@ on:
 
 jobs:
   sonar_scan:
-    name: SonarQube Scan
+    name: SonarQube Scan with Docker
     runs-on: macos-latest  # Run on macOS
 
     steps:
@@ -26,45 +26,46 @@ jobs:
       run: |
         npm install
 
-    # Step 4: Install Java 17
-    - name: Set up Java 17
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'adopt'
-        java-version: '17'
-
-    # Step 5: Set JAVA_HOME environment variable
-    - name: Set JAVA_HOME
+    # Step 4: Install Docker (macOS)
+    - name: Install Docker (macOS)
       run: |
-        echo "JAVA_HOME=$(dirname $(dirname $(readlink $(which java))))" >> $GITHUB_ENV
+        brew install --cask docker
 
-    # Step 6: Verify Java version
-    - name: Verify Java version
+    # Step 5: Wait for Docker to be ready (this step ensures Docker starts)
+    - name: Wait for Docker to start
       run: |
-        java -version
+        while ! docker info > /dev/null 2>&1; do
+          echo "Waiting for Docker to start..."
+          sleep 5
+        done
 
-    # Step 7: Install SonarQube Scanner (macOS)
-    - name: Install SonarQube Scanner (macOS)
+    # Step 6: Pull Docker image with Node.js, Java 17, and SonarQube Scanner
+    - name: Pull Docker image
       run: |
-        curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-macosx.zip
-        unzip sonar-scanner.zip -d sonar-scanner
-        chmod +x sonar-scanner/sonar-scanner-4.6.2.2472-macosx/bin/sonar-scanner
+        docker pull maven:3.8.1-openjdk-17
 
-        # Add sonar-scanner to PATH (make sure this is accessible in subsequent steps)
-        echo "sonar-scanner/sonar-scanner-4.6.2.2472-macosx/bin" >> $GITHUB_PATH
-
-    # Step 8: Verify SonarQube Scanner Installation
-    - name: Verify SonarQube Scanner Installation
+    # Step 7: Create Docker container with the pulled image
+    - name: Create Docker container
       run: |
-        echo $PATH  # Check if the sonar-scanner directory is in PATH
-        sonar-scanner --version  # Verify sonar-scanner is accessible
+        docker run --name sonar-scan-container -d maven:3.8.1-openjdk-17
 
-    # Step 9: Run SonarQube Scan
-    - name: Run SonarQube Scan
+    # Step 8: Install dependencies inside Docker container
+    - name: Install dependencies in Docker container
       run: |
-        sonar-scanner \
+        docker exec sonar-scan-container bash -c "cd /mnt/sonar && npm install"
+
+    # Step 9: Run SonarQube Scan inside Docker container
+    - name: Run SonarQube Scan in Docker container
+      run: |
+        docker exec sonar-scan-container bash -c "sonar-scanner \
           -Dsonar.projectKey=sonarqube-nodejs-project \
           -Dsonar.sources=. \
           -Dsonar.host.url=http://localhost:9000 \
-          -Dsonar.login=sqp_a1467b114c4f45dba482674fb1926c6b919f2942 \
-          -Dsonar.sourceEncoding=UTF-8
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+          -Dsonar.sourceEncoding=UTF-8"
+
+    # Step 10: Clean up Docker container
+    - name: Clean up Docker container
+      run: |
+        docker stop sonar-scan-container
+        docker rm sonar-scan-container
