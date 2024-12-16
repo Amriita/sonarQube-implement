@@ -37,7 +37,7 @@ docker-compose up
    - Follow the prompts to generate a token.
    - Copy the token for later use.
 
-![SonarQube Project Setup Screenshot](static/Screenshot 2024-12-16 at 1.11.41 PM.png)
+![SonarQube Project Setup Screenshot](https://github.com/Amriita/sonarQube-implement/static/Screenshot 2024-12-16 at 1.11.41 PM.png)
 
 ## Run Code Scan
 
@@ -49,7 +49,7 @@ node sonar-scanner.js
 
 After the scan is complete, go back to the SonarQube portal and verify the analysis results.
 
-![SonarQube Analysis Results Screenshot](static/Screenshot 2024-12-16 at 1.02.28 PM.png)
+![SonarQube Analysis Results Screenshot](https://github.com/Amriita/sonarQube-implement/static/Screenshot 2024-12-16 at 1.02.28 PM.png)
 
 ## Fetch Issues Programmatically
 
@@ -96,7 +96,13 @@ This will retrieve the issues detected by SonarQube and display the results in t
 ]
 ```
 
-![Fetch Issues Response Screenshot](static/Screenshot 2024-12-16 at 1.03.46 PM.png)
+![Fetch Issues Response Screenshot](https://github.com/Amriita/sonarQube-implement/static/Screenshot 2024-12-16 at 1.03.46 PM.png)
+
+## cleanUp 
+
+```
+docker-compose down -v
+```
 
 ## Notes
 - Ensure the SonarQube server is running before scanning or fetching issues.
