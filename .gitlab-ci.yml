@@ -1,0 +1,13 @@
+stages:
+  - sonarqube_scan
+
+sonar_scan:
+  stage: sonarqube_scan
+  script:
+    - sonar-scanner \
+      -Dsonar.projectKey=sqp_a1467b114c4f45dba482674fb1926c6b919f2942 \
+      -Dsonar.sources=./src \
+      -Dsonar.host.url=http://localhost:9000 \
+      -Dsonar.login=sqp_a1467b114c4f45dba482674fb1926c6b919f2942
+  only:
+    - merge_requests

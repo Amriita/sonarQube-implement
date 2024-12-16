@@ -51,6 +51,28 @@ router.get('/user/:id', (req, res) => {
     res.status(200).send(user);
 });
 
+router.get('/users', (req, res) => {
+    let filteredUsers = global.users;
+
+    // Complex filtering logic: filter by age and status if provided
+    if (req.query.age) {
+        const age = parseInt(req.query.age, 10);
+        filteredUsers = filteredUsers.filter(user => user.age === age);
+    }
+    
+    if (req.query.status) {
+        filteredUsers = filteredUsers.filter(user => user.status === req.query.status);
+    }
+
+    // Return filtered users or a message if no users match
+    if (filteredUsers.length > 0) {
+        res.status(200).send(filteredUsers);
+    } else {
+        res.status(404).send('No users found matching the criteria');
+    }
+});
+
+
 var x  = 1;
 delete x;       // Noncompliant
 
