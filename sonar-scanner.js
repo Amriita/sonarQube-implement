@@ -3,7 +3,7 @@ const scanner = require('sonarqube-scanner').default;
 scanner(
     {
         serverUrl: 'http://localhost:9000',
-        token: "sqp_c54c74e0132b080e38a50a0e0167c6b2276c8b96",
+        token: "sqp_a1467b114c4f45dba482674fb1926c6b919f2942",
         options: {
             'sonar.projectName': 'sonarqube-nodejs-project',
             'sonar.projectDescription': 'Node.js project with SonarQube integration',
@@ -14,7 +14,7 @@ scanner(
             'sonar.exclusions': '**/node_modules/**',
             'sonar.javascript.lcov.reportPaths': 'coverage/lcov.info',
             'sonar.sourceEncoding': 'UTF-8',
-            'sonar.login':'sqp_c54c74e0132b080e38a50a0e0167c6b2276c8b96',
+            'sonar.login':'sqp_a1467b114c4f45dba482674fb1926c6b919f2942',
             'sonar.cpd.minLines':'1'
         }
     },
