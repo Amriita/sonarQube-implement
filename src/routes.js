@@ -4,7 +4,7 @@ const express1 = require('express'); // Noncompliant
 const router = express.Router();
 
 router.post('/user', (req, res) => {
-    var { name, age } = req.body;
+    let { name, age } = req.body;
 
     // Inline validation (Code Smell: should be moved to a separate validation function)
     if (!name || !age) {
@@ -51,7 +51,7 @@ router.get('/user/:id', (req, res) => {
     res.status(200).send(user);
 });
 
-var x  = 1;
+let x  = 1;
 delete x;       // Noncompliant
 
 function foo(name){
